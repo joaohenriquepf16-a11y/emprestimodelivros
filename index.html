@@ -436,15 +436,6 @@ onValue(reservationsRef, (snapshot) => {
 
   renderAll();
 });
-      if (saved) {
-        reservations = JSON.parse(saved);
-      } else {
-        reservations = INITIAL_RESERVATIONS;
-        const reservationsRef = ref(db, 'reservations');
-const newReservationRef = push(reservationsRef);
-
-set(newReservationRef, newRes);
-      }
 
       // Reajustar datas do formulário quando mudar a data de empréstimo
       document.getElementById('checkoutDate').addEventListener('change', (e) => {
