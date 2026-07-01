@@ -402,7 +402,10 @@
         reservations = JSON.parse(saved);
       } else {
         reservations = INITIAL_RESERVATIONS;
-        localStorage.setItem('reservations_livros_alunos', JSON.stringify(reservations));
+        const reservationsRef = ref(db, 'reservations');
+const newReservationRef = push(reservationsRef);
+
+set(newReservationRef, newRes);
       }
 
       // Reajustar datas do formulário quando mudar a data de empréstimo
