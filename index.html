@@ -325,6 +325,20 @@ import {
   remove,
   update
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+   const firebaseConfig = {
+  apiKey: "AIzaSyAIofHL9_fmE5Xzucbbb3AqwPN7_mbTXFQ",
+  authDomain: "emprestimodelivros-a65c4.firebaseapp.com",
+  databaseURL: "https://emprestimodelivros-a65c4-default-rtdb.firebaseio.com",
+  projectId: "emprestimodelivros-a65c4",
+  storageBucket: "emprestimodelivros-a65c4.firebasestorage.app",
+  messagingSenderId: "686026415181",
+  appId: "1:686026415181:web:028f15d596750229435004",
+  measurementId: "G-7Q60KM2EZ0"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
     // Configurações e dados padrão
     const TODAY_DATE = "2026-07-01";
     let reservations = [];
@@ -784,21 +798,7 @@ set(newReservationRef, newRes);
 
   <!-- Firebase -->
    
-    const firebaseConfig = {
-  apiKey: "AIzaSyAIofHL9_fmE5Xzucbbb3AqwPN7_mbTXFQ",
-  authDomain: "emprestimodelivros-a65c4.firebaseapp.com",
-  databaseURL: "https://emprestimodelivros-a65c4-default-rtdb.firebaseio.com",
-  projectId: "emprestimodelivros-a65c4",
-  storageBucket: "emprestimodelivros-a65c4.firebasestorage.app",
-  messagingSenderId: "686026415181",
-  appId: "1:686026415181:web:028f15d596750229435004",
-  measurementId: "G-7Q60KM2EZ0"
-};
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window.db = db;
+    
   </script>
 
 </body>
