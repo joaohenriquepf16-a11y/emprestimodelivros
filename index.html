@@ -397,7 +397,20 @@
       document.getElementById('current-system-date').innerText = formatDateBR(TODAY_DATE);
 
       // Carregar LocalStorage ou usar iniciais
-      const saved = localStorage.getItem('reservations_livros_alunos');
+      const reservationsRef = ref(db, 'reservations');
+
+onValue(reservationsRef, (snapshot) => {
+  const data = snapshot.val();
+
+  reservations = data
+    ? Object.entries(data).map(([id, value]) => ({
+        firebaseId: id,
+        ...value
+      }))
+    : [];
+
+  renderAll();
+});
       if (saved) {
         reservations = JSON.parse(saved);
       } else {
