@@ -509,11 +509,6 @@ set(newReservationRef, newRes);
       setTimeout(() => succDiv.classList.add('hidden'), 4000);
     }
 
-    function saveAndReload() {
-      localStorage.setItem('reservations_livros_alunos', JSON.stringify(reservations));
-      renderAll();
-    }
-
     // Ações das reservas
     window.toggleReturned = function(id) {
       reservations = reservations.map(res => {
