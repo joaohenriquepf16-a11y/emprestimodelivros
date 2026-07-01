@@ -345,46 +345,7 @@ import {
     let currentStatusFilter = 'all';
 
     // Banco de dados inicial para demonstração
-    const INITIAL_RESERVATIONS = [
-      {
-        id: "demo-1",
-        studentName: "Carlos Eduardo Silva",
-        studentClass: "7º Ano A",
-        bookTitle: "O Pequeno Príncipe",
-        checkoutDate: "2026-06-15",
-        dueDate: "2026-06-22",
-        returned: false,
-      },
-      {
-        id: "demo-2",
-        studentName: "Beatriz Souza Reis",
-        studentClass: "9º Ano B",
-        bookTitle: "Dom Casmurro",
-        checkoutDate: "2026-06-28",
-        dueDate: "2026-07-05",
-        returned: false,
-      },
-      {
-        id: "demo-3",
-        studentName: "Lucas Oliveira Santos",
-        studentClass: "8º Ano C",
-        bookTitle: "Harry Potter e a Pedra Filosofal",
-        checkoutDate: "2026-06-20",
-        dueDate: "2026-06-27",
-        returned: true,
-        returnDate: "2026-06-25",
-      },
-      {
-        id: "demo-4",
-        studentName: "Mariana Costa Ferraz",
-        studentClass: "3º Ano E.M.",
-        bookTitle: "A Hora da Estrela",
-        checkoutDate: "2026-06-18",
-        dueDate: "2026-06-25",
-        returned: false,
-      }
-    ];
-
+    
     // Helpers de data
     function parseDate(dateStr) {
       const [year, month, day] = dateStr.split("-").map(Number);
