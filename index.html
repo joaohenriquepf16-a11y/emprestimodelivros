@@ -314,6 +314,17 @@
   </footer>
 
  <script type="module">
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  push,
+  set,
+  onValue,
+  remove,
+  update
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
     // Configurações e dados padrão
     const TODAY_DATE = "2026-07-01";
     let reservations = [];
@@ -773,17 +784,7 @@ set(newReservationRef, newRes);
 
   <!-- Firebase -->
   <script type="module">
-   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
-import {
-  getDatabase,
-  ref,
-  push,
-  set,
-  onValue,
-  remove,
-  update
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+   
     const firebaseConfig = {
   apiKey: "AIzaSyAIofHL9_fmE5Xzucbbb3AqwPN7_mbTXFQ",
   authDomain: "emprestimodelivros-a65c4.firebaseapp.com",
