@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca Escolar - Reserva de Livros</title>
+  
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter, Outfit e JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .font-display {
+      font-family: 'Outfit', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Transições suaves */
+    .transition-all {
+      transition: all 0.2s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+  <!-- HEADER PRINCIPAL - AZUL MARINHO, BRANCO E AZUL CLARO -->
+  <header class="bg-[#0B1A30] text-white shadow-md border-b-4 border-sky-400">
+    <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      
+      <!-- Logo e Título -->
+      <div class="flex items-center gap-3">
+        <div class="bg-sky-400 p-2.5 rounded-xl text-[#0B1A30] shadow-md shadow-sky-400/20">
+          <i data-lucide="book-marked" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-white">
+            Biblioteca<span class="text-sky-400">Escolar</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-300 font-medium flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+            Sistema de Gestão & Reservas de Livros
+          </p>
+        </div>
+      </div>
+
+      <!-- Data do Sistema -->
+      <div class="flex items-center gap-4 bg-[#142642] px-4 py-2.5 rounded-xl border border-slate-700">
+        <i data-lucide="calendar" class="w-5 h-5 text-sky-400"></i>
+        <div class="text-right">
+          <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Data do Sistema</p>
+          <p id="current-system-date" class="text-sm font-bold text-yellow-400">01/07/2026</p>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- BANNER DE AVISO DE ATRASO (AMARELO E BRANCO COM CONTRASTE) -->
+  <div id="overdue-banner" class="hidden bg-yellow-400 text-slate-950 border-b border-yellow-500 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 font-semibold text-sm">
+      <div class="flex items-center gap-3">
+        <div class="bg-[#0B1A30] text-yellow-400 p-1.5 rounded-lg">
+          <i data-lucide="alert-triangle" class="w-5 h-5 animate-bounce"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-base text-[#0B1A30] block sm:inline">ALERTA DE ATRASO:</span> 
+          Há <span id="overdue-count-text" class="underline font-black text-red-700">0 livros</span> com o prazo de devolução expirado!
+        </div>
+      </div>
+      <button onclick="filterOverdue()" class="bg-[#0B1A30] hover:bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-bold shadow-md transition-colors shrink-0">
+        Filtrar Atrasados
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-8">
+    
+    <!-- GRID DE ESTATÍSTICAS -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      
+      <!-- Card Total -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between hover:shadow-md transition-all">
+        <div>
+          <p class="text-xs sm:text-sm font-semibold text-slate-400 uppercase tracking-wider">Total</p>
+          <h3 id="stat-total" class="text-2xl sm:text-3xl font-extrabold text-[#0B1A30] mt-1">0</h3>
+        </div>
+        <div class="p-3 bg-slate-100 rounded-xl text-slate-500">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Card Ativos -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between hover:shadow-md transition-all">
+        <div>
+          <p class="text-xs sm:text-sm font-semibold text-slate-400 uppercase tracking-wider">Emprestados</p>
+          <h3 id="stat-active" class="text-2xl sm:text-3xl font-extrabold text-sky-600 mt-1">0</h3>
+        </div>
+        <div class="p-3 bg-sky-50 rounded-xl text-sky-600">
+          <i data-lucide="clock" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Card Atrasados (Amarelo dinâmico) -->
+      <div id="card-overdue" class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between hover:shadow-md transition-all">
+        <div>
+          <p class="text-xs sm:text-sm font-semibold text-slate-400 uppercase tracking-wider">Atrasados</p>
+          <h3 id="stat-overdue" class="text-2xl sm:text-3xl font-extrabold text-slate-700 mt-1">0</h3>
+        </div>
+        <div id="icon-overdue-wrapper" class="p-3 bg-slate-100 rounded-xl text-slate-400">
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Card Devolvidos -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between hover:shadow-md transition-all">
+        <div>
+          <p class="text-xs sm:text-sm font-semibold text-slate-400 uppercase tracking-wider">Devolvidos</p>
+          <h3 id="stat-returned" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">0</h3>
+        </div>
+        <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600">
+          <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SEÇÃO DUPLA: CADASTRO E LISTA -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- FORMULÁRIO DE CADASTRO -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
+          <div class="bg-[#0B1A30] text-white px-5 py-4 flex items-center gap-2">
+            <i data-lucide="plus" class="w-5 h-5 text-sky-400"></i>
+            <h2 class="font-extrabold font-display text-lg">Novo Empréstimo</h2>
+          </div>
+
+          <form id="reservation-form" class="p-5 flex flex-col gap-4">
+            
+            <!-- Mensagens de Alerta -->
+            <div id="form-error" class="hidden bg-red-50 text-red-700 p-3 rounded-xl text-xs font-semibold border border-red-200 flex items-center gap-2"></div>
+            <div id="form-success" class="hidden bg-emerald-50 text-emerald-700 p-3 rounded-xl text-xs font-semibold border border-emerald-200 flex items-center gap-2"></div>
+
+            <!-- Aluno -->
+            <div>
+              <label class="block text-xs font-bold text-[#0B1A30] uppercase tracking-wider mb-1.5">Nome do Aluno *</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                  <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                </span>
+                <input type="text" id="studentName" required placeholder="Ex: Carlos Eduardo Silva" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium">
+              </div>
+            </div>
+
+            <!-- Turma -->
+            <div>
+              <label class="block text-xs font-bold text-[#0B1A30] uppercase tracking-wider mb-1.5">Turma / Ano *</label>
+              <input type="text" id="studentClass" required placeholder="Ex: 8º Ano B, 3º Ano E.M." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium">
+            </div>
+
+            <!-- Livro -->
+            <div>
+              <label class="block text-xs font-bold text-[#0B1A30] uppercase tracking-wider mb-1.5">Título do Livro *</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                  <i data-lucide="book-open" class="w-4 h-4"></i>
+                </span>
+                <input type="text" id="bookTitle" required placeholder="Ex: O Pequeno Príncipe" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium">
+              </div>
+            </div>
+
+            <!-- Datas -->
+            <div class="grid grid-cols-1 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-[#0B1A30] uppercase tracking-wider mb-1.5">Data de Empréstimo *</label>
+                <input type="date" id="checkoutDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-[#0B1A30] uppercase tracking-wider mb-1.5">Previsão de Devolução *</label>
+                <input type="date" id="dueDate" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium">
+              </div>
+            </div>
+
+            <!-- Atalhos de Prazo -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <span class="text-slate-400 font-bold">Adicionar prazo:</span>
+              <button type="button" onclick="setFastDueDate(7)" class="bg-slate-100 hover:bg-slate-200 text-[#0B1A30] px-2.5 py-0.5 rounded font-bold">+7 dias</button>
+              <button type="button" onclick="setFastDueDate(15)" class="bg-slate-100 hover:bg-slate-200 text-[#0B1A30] px-2.5 py-0.5 rounded font-bold">+15 dias</button>
+            </div>
+
+            <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-sm py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              Confirmar Empréstimo
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- LISTA DE RESERVAS -->
+      <div class="lg:col-span-2 flex flex-col gap-4">
+        
+        <!-- BARRA DE CONTROLE: PESQUISA, FILTROS E ORDENAÇÃO -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col gap-4">
+          
+          <!-- Pesquisa text -->
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </span>
+            <input type="text" id="search-query" oninput="applyFilters()" placeholder="Pesquisar por aluno, livro ou turma..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium text-slate-800">
+          </div>
+
+          <!-- Filtros de Status e Turma -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            
+            <div class="flex flex-wrap p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold text-slate-500">
+              <button onclick="setStatusFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-[#0B1A30] text-white transition-all">Todos</button>
+              <button onclick="setStatusFilter('active')" id="filter-active" class="px-3 py-1.5 rounded-lg transition-all">Em Dia</button>
+              <button onclick="setStatusFilter('overdue')" id="filter-overdue" class="px-3 py-1.5 rounded-lg transition-all">Atrasados</button>
+              <button onclick="setStatusFilter('returned')" id="filter-returned" class="px-3 py-1.5 rounded-lg transition-all">Devolvidos</button>
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <select id="class-filter" onchange="applyFilters()" class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#0B1A30] focus:outline-none focus:ring-1 focus:ring-sky-400 cursor-pointer">
+                <option value="all">Todas Turmas</option>
+              </select>
+
+              <select id="sort-by" onchange="applyFilters()" class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-[#0B1A30] focus:outline-none focus:ring-1 focus:ring-sky-400 cursor-pointer">
+                <option value="dueDateAsc">Prazo: Mais próximo</option>
+                <option value="dueDateDesc">Prazo: Mais distante</option>
+                <option value="studentName">Aluno: A-Z</option>
+                <option value="bookTitle">Livro: A-Z</option>
+              </select>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TABELA / CARDS -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          
+          <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+            <h3 class="font-extrabold text-[#0B1A30] font-display text-sm">Lista de Empréstimos Ativos & Devolvidos</h3>
+            <span class="text-xs text-slate-400 font-semibold font-mono">LocalStorage</span>
+          </div>
+
+          <!-- Tabela de Registros -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse hidden md:table">
+              <thead>
+                <tr class="bg-slate-50/50 text-slate-400 uppercase text-[10px] tracking-wider font-bold border-b border-slate-100">
+                  <th class="py-3 px-4">Aluno & Turma</th>
+                  <th class="py-3 px-4">Livro Emprestado</th>
+                  <th class="py-3 px-4">Datas</th>
+                  <th class="py-3 px-4">Status & Prazo</th>
+                  <th class="py-3 px-4 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="table-body" class="divide-y divide-slate-100 text-sm">
+                <!-- Inserido dinamicamente -->
+              </tbody>
+            </table>
+
+            <!-- Lista de Cards no Mobile -->
+            <div id="cards-container" class="block md:hidden divide-y divide-slate-100">
+              <!-- Inserido dinamicamente -->
+            </div>
+
+            <!-- Estado Vazio -->
+            <div id="empty-state" class="hidden p-12 text-center flex flex-col items-center justify-center gap-3">
+              <div class="bg-slate-100 p-4 rounded-full text-slate-400">
+                <i data-lucide="book-open" class="w-10 h-10"></i>
+              </div>
+              <div>
+                <h4 class="font-extrabold text-slate-700 text-base">Nenhum empréstimo encontrado</h4>
+                <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Tente reajustar seus filtros ou faça um novo cadastro.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#0B1A30] text-slate-400 py-6 border-t border-slate-800 text-center text-xs mt-12 font-medium">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© 2026 - Biblioteca Escolar. Desenvolvido para Controle de Devolução de Livros.</p>
+      <div class="flex items-center gap-1.5 text-slate-400 justify-center">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Pronto para o GitHub & Firebase Realtime DB</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Configurações e dados padrão
+    const TODAY_DATE = "2026-07-01";
+    let reservations = [];
+    let currentStatusFilter = 'all';
+
+    // Banco de dados inicial para demonstração
+    const INITIAL_RESERVATIONS = [
+      {
+        id: "demo-1",
+        studentName: "Carlos Eduardo Silva",
+        studentClass: "7º Ano A",
+        bookTitle: "O Pequeno Príncipe",
+        checkoutDate: "2026-06-15",
+        dueDate: "2026-06-22",
+        returned: false,
+      },
+      {
+        id: "demo-2",
+        studentName: "Beatriz Souza Reis",
+        studentClass: "9º Ano B",
+        bookTitle: "Dom Casmurro",
+        checkoutDate: "2026-06-28",
+        dueDate: "2026-07-05",
+        returned: false,
+      },
+      {
+        id: "demo-3",
+        studentName: "Lucas Oliveira Santos",
+        studentClass: "8º Ano C",
+        bookTitle: "Harry Potter e a Pedra Filosofal",
+        checkoutDate: "2026-06-20",
+        dueDate: "2026-06-27",
+        returned: true,
+        returnDate: "2026-06-25",
+      },
+      {
+        id: "demo-4",
+        studentName: "Mariana Costa Ferraz",
+        studentClass: "3º Ano E.M.",
+        bookTitle: "A Hora da Estrela",
+        checkoutDate: "2026-06-18",
+        dueDate: "2026-06-25",
+        returned: false,
+      }
+    ];
+
+    // Helpers de data
+    function parseDate(dateStr) {
+      const [year, month, day] = dateStr.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    // Calcula diferença em dias (positivo = dataStr2 é depois de dataStr1)
+    function getDaysDiff(dateStr1, dateStr2) {
+      const d1 = parseDate(dateStr1);
+      const d2 = parseDate(dateStr2);
+      const timeDiff = d2.getTime() - d1.getTime();
+      return Math.ceil(timeDiff / (1000 * 3600 * 24));
+    }
+
+    function formatDateBR(dateStr) {
+      if (!dateStr) return "-";
+      const [year, month, day] = dateStr.split("-");
+      return day + "/" + month + "/" + year;
+    }
+
+    function getDefaultDueDate(checkout) {
+      const date = parseDate(checkout);
+      date.setDate(date.getDate() + 7);
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return y + "-" + m + "-" + d;
+    }
+
+    // Inicialização da página
+    window.addEventListener('DOMContentLoaded', () => {
+      // Configurar datas do form
+      document.getElementById('checkoutDate').value = TODAY_DATE;
+      document.getElementById('dueDate').value = getDefaultDueDate(TODAY_DATE);
+      document.getElementById('current-system-date').innerText = formatDateBR(TODAY_DATE);
+
+      // Carregar LocalStorage ou usar iniciais
+      const saved = localStorage.getItem('reservations_livros_alunos');
+      if (saved) {
+        reservations = JSON.parse(saved);
+      } else {
+        reservations = INITIAL_RESERVATIONS;
+        localStorage.setItem('reservations_livros_alunos', JSON.stringify(reservations));
+      }
+
+      // Reajustar datas do formulário quando mudar a data de empréstimo
+      document.getElementById('checkoutDate').addEventListener('change', (e) => {
+        document.getElementById('dueDate').value = getDefaultDueDate(e.target.value);
+      });
+
+      // Submissão do Form
+      document.getElementById('reservation-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const sName = document.getElementById('studentName').value.trim();
+        const sClass = document.getElementById('studentClass').value.trim();
+        const bTitle = document.getElementById('bookTitle').value.trim();
+        const cDate = document.getElementById('checkoutDate').value;
+        const dDate = document.getElementById('dueDate').value;
+
+        if (new Date(cDate) > new Date(dDate)) {
+          showFormError("A data de devolução não pode ser anterior ao empréstimo.");
+          return;
+        }
+
+        const newRes = {
+          id: "res-" + Date.now(),
+          studentName: sName,
+          studentClass: sClass,
+          bookTitle: bTitle,
+          checkoutDate: cDate,
+          dueDate: dDate,
+          returned: false
+        };
+
+        reservations.unshift(newRes);
+        saveAndReload();
+
+        // Limpar inputs
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentClass').value = '';
+        document.getElementById('bookTitle').value = '';
+        document.getElementById('checkoutDate').value = TODAY_DATE;
+        document.getElementById('dueDate').value = getDefaultDueDate(TODAY_DATE);
+
+        showFormSuccess("Empréstimo cadastrado com sucesso!");
+      });
+
+      // Renderizar tudo
+      renderAll();
+    });
+
+    // Atalhos Rápidos para data de devolução
+    window.setFastDueDate = function(days) {
+      const checkout = document.getElementById('checkoutDate').value;
+      const date = parseDate(checkout);
+      date.setDate(date.getDate() + days);
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      document.getElementById('dueDate').value = y + "-" + m + "-" + d;
+    };
+
+    function showFormError(msg) {
+      const errDiv = document.getElementById('form-error');
+      errDiv.innerText = msg;
+      errDiv.classList.remove('hidden');
+      setTimeout(() => errDiv.classList.add('hidden'), 4000);
+    }
+
+    function showFormSuccess(msg) {
+      const succDiv = document.getElementById('form-success');
+      succDiv.innerText = msg;
+      succDiv.classList.remove('hidden');
+      setTimeout(() => succDiv.classList.add('hidden'), 4000);
+    }
+
+    function saveAndReload() {
+      localStorage.setItem('reservations_livros_alunos', JSON.stringify(reservations));
+      renderAll();
+    }
+
+    // Ações das reservas
+    window.toggleReturned = function(id) {
+      reservations = reservations.map(res => {
+        if (res.id === id) {
+          const isReturned = !res.returned;
+          return {
+            ...res,
+            returned: isReturned,
+            returnDate: isReturned ? TODAY_DATE : undefined
+          };
+        }
+        return res;
+      });
+      saveAndReload();
+    };
+
+    window.deleteReservation = function(id) {
+      if (confirm("Tem certeza de que deseja excluir este registro de empréstimo?")) {
+        reservations = reservations.filter(res => res.id !== id);
+        saveAndReload();
+      }
+    };
+
+    window.setStatusFilter = function(status) {
+      currentStatusFilter = status;
+      
+      // Atualizar classes dos botões
+      ['all', 'active', 'overdue', 'returned'].forEach(st => {
+        const btn = document.getElementById('filter-' + st);
+        if (st === status) {
+          btn.className = "px-3 py-1.5 rounded-lg bg-[#0B1A30] text-white transition-all";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg transition-all text-slate-500 hover:text-slate-800";
+        }
+      });
+
+      applyFilters();
+    };
+
+    window.filterOverdue = function() {
+      setStatusFilter('overdue');
+    };
+
+    // Filtros e Ordenação
+    window.applyFilters = function() {
+      const query = document.getElementById('search-query').value.toLowerCase();
+      const classSel = document.getElementById('class-filter').value;
+      const sortBy = document.getElementById('sort-by').value;
+
+      let filtered = reservations.filter(res => {
+        // Busca
+        const matchesSearch = 
+          res.studentName.toLowerCase().includes(query) ||
+          res.bookTitle.toLowerCase().includes(query) ||
+          res.studentClass.toLowerCase().includes(query);
+
+        // Turma
+        const matchesClass = classSel === 'all' || res.studentClass === classSel;
+
+        // Status
+        let matchesStatus = true;
+        if (currentStatusFilter === 'active') {
+          matchesStatus = !res.returned;
+        } else if (currentStatusFilter === 'overdue') {
+          matchesStatus = !res.returned && getDaysDiff(res.dueDate, TODAY_DATE) > 0;
+        } else if (currentStatusFilter === 'returned') {
+          matchesStatus = res.returned;
+        }
+
+        return matchesSearch && matchesClass && matchesStatus;
+      });
+
+      // Ordenação
+      filtered.sort((a, b) => {
+        if (sortBy === 'dueDateAsc') {
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        }
+        if (sortBy === 'dueDateDesc') {
+          return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+        }
+        if (sortBy === 'studentName') {
+          return a.studentName.localeCompare(b.studentName);
+        }
+        if (sortBy === 'bookTitle') {
+          return a.bookTitle.localeCompare(b.bookTitle);
+        }
+        return 0;
+      });
+
+      renderListOnly(filtered);
+    };
+
+    function updateStats() {
+      let total = reservations.length;
+      let active = 0;
+      let overdue = 0;
+      let returned = 0;
+
+      reservations.forEach(res => {
+        if (res.returned) {
+          returned++;
+        } else {
+          active++;
+          if (getDaysDiff(res.dueDate, TODAY_DATE) > 0) {
+            overdue++;
+          }
+        }
+      });
+
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-active').innerText = active;
+      document.getElementById('stat-overdue').innerText = overdue;
+      document.getElementById('stat-returned').innerText = returned;
+
+      // Banner de Alerta de atraso
+      const banner = document.getElementById('overdue-banner');
+      if (overdue > 0) {
+        banner.classList.remove('hidden');
+        document.getElementById('overdue-count-text').innerText = overdue === 1 ? '1 livro' : overdue + ' livros';
+        
+        // Estilizar card de atraso
+        document.getElementById('card-overdue').className = "bg-yellow-100 border-yellow-300 p-4 sm:p-6 rounded-2xl shadow-sm border flex items-center justify-between hover:shadow-md transition-all";
+        document.getElementById('icon-overdue-wrapper').className = "p-3 bg-yellow-400 text-slate-900 rounded-xl";
+      } else {
+        banner.classList.add('hidden');
+        document.getElementById('card-overdue').className = "bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between hover:shadow-md transition-all";
+        document.getElementById('icon-overdue-wrapper').className = "p-3 bg-slate-100 text-slate-400 rounded-xl";
+      }
+    }
+
+    function populateClassFilter() {
+      const select = document.getElementById('class-filter');
+      const currentValue = select.value;
+      
+      // Limpar opções mantendo a primeira
+      select.innerHTML = '<option value="all">Todas Turmas</option>';
+      
+      const classes = Array.from(new Set(reservations.map(res => res.studentClass.trim()))).filter(Boolean);
+      classes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.innerText = c;
+        select.appendChild(opt);
+      });
+
+      // Restaurar valor anterior se possível
+      if (classes.includes(currentValue)) {
+        select.value = currentValue;
+      }
+    }
+
+    function renderListOnly(list) {
+      const tBody = document.getElementById('table-body');
+      const cardsContainer = document.getElementById('cards-container');
+      const emptyState = document.getElementById('empty-state');
+
+      tBody.innerHTML = '';
+      cardsContainer.innerHTML = '';
+
+      if (list.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      list.forEach(res => {
+        const isLate = !res.returned && getDaysDiff(res.dueDate, TODAY_DATE) > 0;
+        const daysDiff = getDaysDiff(res.dueDate, TODAY_DATE);
+        const daysLeft = getDaysDiff(TODAY_DATE, res.dueDate);
+
+        // Status badge
+        let statusBadge = '';
+        if (res.returned) {
+          statusBadge = `<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold">Devolvido</span>`;
+        } else if (isLate) {
+          statusBadge = `<div class="flex flex-col gap-1 items-start">
+            <span class="inline-flex items-center gap-1 bg-yellow-400 text-slate-900 text-xs px-2.5 py-1 rounded-full font-bold shadow-sm">Prazo Expirado</span>
+            <span class="text-[11px] text-red-600 font-extrabold font-mono">${daysDiff} dias de atraso</span>
+          </div>`;
+        } else {
+          statusBadge = `<div class="flex flex-col gap-1 items-start">
+            <span class="inline-flex items-center gap-1 bg-sky-100 text-sky-800 text-xs px-2.5 py-1 rounded-full font-bold">No Prazo</span>
+            <span class="text-[11px] text-slate-500 font-bold font-mono">Faltam ${daysLeft} dias</span>
+          </div>`;
+        }
+
+        // Row Desktop
+        const tr = document.createElement('tr');
+        tr.className = `group hover:bg-slate-50/70 transition-colors ${isLate ? 'bg-yellow-50/30' : ''}`;
+        tr.innerHTML = `
+          <td class="py-4 px-4">
+            <div class="flex items-start gap-2.5">
+              <div class="p-1.5 rounded-lg mt-0.5 ${res.returned ? 'bg-slate-100 text-slate-500' : isLate ? 'bg-yellow-200 text-slate-900' : 'bg-sky-100 text-sky-700'}">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-bold text-slate-800">${res.studentName}</p>
+                <p class="text-xs text-slate-500 font-semibold mt-0.5">Turma: <span class="text-[#0B1A30] font-bold">${res.studentClass}</span></p>
+              </div>
+            </div>
+          </td>
+          <td class="py-4 px-4">
+            <div class="flex items-center gap-2">
+              <i data-lucide="book-open" class="w-4 h-4 text-slate-400"></i>
+              <span class="font-semibold text-slate-700">${res.bookTitle}</span>
+            </div>
+          </td>
+          <td class="py-4 px-4 text-xs font-semibold text-slate-500">
+            <div>Retirada: ${formatDateBR(res.checkoutDate)}</div>
+            <div>Previsão: <span class="font-bold">${formatDateBR(res.dueDate)}</span></div>
+            ${res.returned ? `<div class="text-emerald-600 font-bold">Entregue: ${formatDateBR(res.returnDate)}</div>` : ''}
+          </td>
+          <td class="py-4 px-4">${statusBadge}</td>
+          <td class="py-4 px-4 text-right">
+            <div class="flex items-center justify-end gap-1.5">
+              <button onclick="toggleReturned('${res.id}')" class="p-1.5 rounded-lg border ${res.returned ? 'bg-slate-100 text-slate-500' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}" title="Alternar Status">
+                <i data-lucide="${res.returned ? 'rotate-ccw' : 'check'}" class="w-4 h-4"></i>
+              </button>
+              <button onclick="deleteReservation('${res.id}')" class="p-1.5 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 border border-slate-200 rounded-lg" title="Excluir">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tBody.appendChild(tr);
+
+        // Card Mobile
+        const card = document.createElement('div');
+        card.className = `p-4 flex flex-col gap-3.5 ${isLate ? 'bg-yellow-50/40 border-l-4 border-yellow-400' : ''} border-b border-slate-100`;
+        card.innerHTML = `
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-bold uppercase">${res.studentClass}</span>
+              <h4 class="font-extrabold text-[#0B1A30] text-base mt-1">${res.studentName}</h4>
+              <p class="text-xs text-slate-600 font-semibold mt-0.5 flex items-center gap-1">
+                <i data-lucide="book-open" class="w-3.5 h-3.5 text-slate-400"></i>
+                Livro: <span class="text-slate-800 font-bold">${res.bookTitle}</span>
+              </p>
+            </div>
+            <div>
+              ${res.returned ? '<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Devolvido</span>' : isLate ? '<span class="bg-yellow-400 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-extrabold">Expirado</span>' : '<span class="bg-sky-100 text-sky-800 text-[10px] px-2 py-0.5 rounded-full font-bold">No Prazo</span>'}
+            </div>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 flex flex-col gap-1">
+            <div class="flex justify-between"><span>Retirada:</span><span>${formatDateBR(res.checkoutDate)}</span></div>
+            <div class="flex justify-between"><span>Previsão:</span><span class="text-[#0B1A30] font-black">${formatDateBR(res.dueDate)}</span></div>
+            ${res.returned ? `<div class="flex justify-between text-emerald-600 font-bold border-t pt-1 mt-1"><span>Entregue em:</span><span>${formatDateBR(res.returnDate)}</span></div>` : ''}
+          </div>
+          <div class="flex items-center justify-end gap-2 border-t pt-2.5">
+            <button onclick="toggleReturned('${res.id}')" class="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg ${res.returned ? 'bg-slate-100 text-slate-600' : 'bg-emerald-600 text-white'}">
+              <i data-lucide="${res.returned ? 'rotate-ccw' : 'check'}" class="w-3.5 h-3.5"></i>
+              ${res.returned ? 'Pendente' : 'Marcar Devolvido'}
+            </button>
+            <button onclick="deleteReservation('${res.id}')" class="p-1.5 bg-slate-100 text-slate-500 rounded-lg">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+        cardsContainer.appendChild(card);
+      });
+
+      // Recarregar os ícones do Lucide
+      lucide.createIcons();
+    }
+
+    function renderAll() {
+      updateStats();
+      populateClassFilter();
+      applyFilters();
+    }
+  </script>
+</body>
+</html>
