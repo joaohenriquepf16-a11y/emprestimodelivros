@@ -510,25 +510,18 @@ set(newReservationRef, newRes);
     }
 
     // Ações das reservas
-    window.toggleReturned = function(id) {
-      window.toggleReturned = function(id) {
+   window.toggleReturned = function(id) {
 
-  const item = reservations.find(r => r.id === id);
+    const item = reservations.find(r => r.id === id);
 
-  if (!item) return;
+    if (!item) return;
 
-  update(ref(db, `reservations/${item.firebaseId}`), {
-    returned: !item.returned,
-    returnDate: !item.returned ? TODAY_DATE : null
-  });
+    update(ref(db, `reservations/${item.firebaseId}`), {
+        returned: !item.returned,
+        returnDate: !item.returned ? TODAY_DATE : null
+    });
 
 };
-        }
-        return res;
-      });
-      saveAndReload();
-    };
-
    window.deleteReservation = function(id) {
 
   if (!confirm("Tem certeza?")) return;
