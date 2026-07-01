@@ -516,7 +516,7 @@ set(newReservationRef, newRes);
 
     window.deleteReservation = function(id) {
       if (confirm("Tem certeza de que deseja excluir este registro de empréstimo?")) {
-        reservations = reservations.filter(res => res.id !== id);
+        remove(ref(db, `reservations/${firebaseId}`));
         saveAndReload();
       }
     };
