@@ -525,12 +525,16 @@ set(newReservationRef, newRes);
       saveAndReload();
     };
 
-    window.deleteReservation = function(id) {
-      if (confirm("Tem certeza de que deseja excluir este registro de empréstimo?")) {
-        remove(ref(db, `reservations/${firebaseId}`));
-        saveAndReload();
-      }
-    };
+   window.deleteReservation = function(id) {
+
+  if (!confirm("Tem certeza?")) return;
+
+  const item = reservations.find(r => r.id === id);
+
+  if (!item) return;
+
+  remove(ref(db, `reservations/${item.firebaseId}`));
+};
 
     window.setStatusFilter = function(status) {
       currentStatusFilter = status;
