@@ -467,8 +467,8 @@ onValue(reservationsRef, (snapshot) => {
           returned: false
         };
 
-        reservations.unshift(newRes);
-        saveAndReload();
+        const newReservationRef = push(ref(db, "reservations"));
+set(newReservationRef, newRes);
 
         // Limpar inputs
         document.getElementById('studentName').value = '';
