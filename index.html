@@ -511,14 +511,18 @@ set(newReservationRef, newRes);
 
     // Ações das reservas
     window.toggleReturned = function(id) {
-      reservations = reservations.map(res => {
-        if (res.id === id) {
-          const isReturned = !res.returned;
-          return {
-            ...res,
-            returned: isReturned,
-            returnDate: isReturned ? TODAY_DATE : undefined
-          };
+      window.toggleReturned = function(id) {
+
+  const item = reservations.find(r => r.id === id);
+
+  if (!item) return;
+
+  update(ref(db, `reservations/${item.firebaseId}`), {
+    returned: !item.returned,
+    returnDate: !item.returned ? TODAY_DATE : null
+  });
+
+};
         }
         return res;
       });
