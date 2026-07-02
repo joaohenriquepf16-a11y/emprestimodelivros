@@ -672,10 +672,18 @@ set(newReservationRef, newRes);
               <div class="p-1.5 rounded-lg mt-0.5 ${res.returned ? 'bg-slate-100 text-slate-500' : isLate ? 'bg-yellow-200 text-slate-900' : 'bg-sky-100 text-sky-700'}">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
               </div>
-              <div>
-                <p class="font-bold text-slate-800">${res.studentName}</p>
-                <p class="text-xs text-slate-500 font-semibold mt-0.5">Turma: <span class="text-[#0B1A30] font-bold">${res.studentClass}</span></p>
-              </div>
+              <div class="bg-sky-100 border border-sky-300 rounded-xl p-3 shadow-sm">
+  <p class="font-extrabold text-sky-900 text-base">
+    ${res.studentName}
+  </p>
+
+  <p class="text-xs text-sky-700 font-semibold mt-1">
+    Turma:
+    <span class="font-bold">
+      ${res.studentClass}
+    </span>
+  </p>
+</div>
             </div>
           </td>
           <td class="py-4 px-4">
