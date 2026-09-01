@@ -211,11 +211,11 @@
           <div class="flex flex-wrap items-center justify-between gap-3">
             
             <div class="flex flex-wrap items-center gap-2">
-              <div class="flex flex-wrap p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold text-slate-500">
+              <div class="flex flex-wrap p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
                 <button onclick="setStatusFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-[#0B1A30] text-white transition-all">Todos</button>
-                <button onclick="setStatusFilter('active')" id="filter-active" class="px-3 py-1.5 rounded-lg transition-all">Em Dia</button>
-                <button onclick="setStatusFilter('overdue')" id="filter-overdue" class="px-3 py-1.5 rounded-lg transition-all">Atrasados</button>
-                <button onclick="setStatusFilter('returned')" id="filter-returned" class="px-3 py-1.5 rounded-lg transition-all">Devolvidos</button>
+                <button onclick="setStatusFilter('active')" id="filter-active" class="px-3 py-1.5 rounded-lg text-sky-700 hover:bg-sky-50 transition-all">Em Dia</button>
+                <button onclick="setStatusFilter('overdue')" id="filter-overdue" class="px-3 py-1.5 rounded-lg text-yellow-800 hover:bg-yellow-50 transition-all">Atrasados</button>
+                <button onclick="setStatusFilter('returned')" id="filter-returned" class="px-3 py-1.5 rounded-lg text-emerald-700 hover:bg-emerald-50 transition-all">Devolvidos</button>
               </div>
               <button type="button" id="download-status-pdf" onclick="downloadSelectedStatusPdf()" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 rounded-lg font-extrabold shadow-sm transition-colors" title="Baixar em PDF a categoria selecionada">
                 <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
@@ -234,35 +234,6 @@
               </select>
             </div>
           </div>
-            <!-- Exportação em PDF -->
-            <div class="border-t border-slate-200 pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div class="flex items-center gap-2 text-xs font-extrabold text-[#0B1A30]">
-                <i data-lucide="file-down" class="w-4 h-4 text-red-500"></i>
-                Baixar relatório em PDF
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <button type="button" onclick="downloadLoansPdf('all')" class="inline-flex items-center gap-1.5 bg-[#0B1A30] hover:bg-slate-800 text-white text-[11px] px-3 py-1.5 rounded-lg font-bold transition-colors" title="Baixar todos os empréstimos">
-                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                  Todos
-                </button>
-                <button type="button" onclick="downloadLoansPdf('active')" class="inline-flex items-center gap-1.5 bg-sky-100 hover:bg-sky-200 text-sky-800 text-[11px] px-3 py-1.5 rounded-lg font-bold transition-colors" title="Baixar empréstimos em dia">
-                  <i data-lucide="clock-3" class="w-3.5 h-3.5"></i>
-                  Em dia
-                </button>
-                <button type="button" onclick="downloadLoansPdf('overdue')" class="inline-flex items-center gap-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-900 text-[11px] px-3 py-1.5 rounded-lg font-bold transition-colors" title="Baixar empréstimos atrasados">
-                  <i data-lucide="triangle-alert" class="w-3.5 h-3.5"></i>
-                  Atrasados
-                </button>
-                <button type="button" onclick="downloadLoansPdf('returned')" class="inline-flex items-center gap-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] px-3 py-1.5 rounded-lg font-bold transition-colors" title="Baixar empréstimos devolvidos">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-                  Devolvidos
-                </button>
-                <button type="button" onclick="downloadLoansPdf('current')" class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-[#0B1A30] text-[11px] px-3 py-1.5 rounded-lg font-bold transition-colors" title="Baixar a lista com os filtros atuais">
-                  <i data-lucide="list-filter" class="w-3.5 h-3.5"></i>
-                  Lista atual
-                </button>
-              </div>
-            </div>
         </div>
         <!-- TABELA / CARDS -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -472,12 +443,24 @@ set(newReservationRef, newRes);
       currentStatusFilter = status;
       
       // Atualizar classes dos botões
+      const buttonClasses = {
+        all: "px-3 py-1.5 rounded-lg bg-[#0B1A30] text-white transition-all",
+        active: "px-3 py-1.5 rounded-lg bg-sky-500 text-white transition-all",
+        overdue: "px-3 py-1.5 rounded-lg bg-yellow-400 text-slate-950 transition-all",
+        returned: "px-3 py-1.5 rounded-lg bg-emerald-500 text-white transition-all"
+      };
+      const inactiveButtonClasses = {
+        all: "px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 transition-all",
+        active: "px-3 py-1.5 rounded-lg text-sky-700 hover:bg-sky-50 transition-all",
+        overdue: "px-3 py-1.5 rounded-lg text-yellow-800 hover:bg-yellow-50 transition-all",
+        returned: "px-3 py-1.5 rounded-lg text-emerald-700 hover:bg-emerald-50 transition-all"
+      };
       ['all', 'active', 'overdue', 'returned'].forEach(st => {
         const btn = document.getElementById('filter-' + st);
         if (st === status) {
-          btn.className = "px-3 py-1.5 rounded-lg bg-[#0B1A30] text-white transition-all";
+          btn.className = buttonClasses[st];
         } else {
-          btn.className = "px-3 py-1.5 rounded-lg transition-all text-slate-500 hover:text-slate-800";
+          btn.className = inactiveButtonClasses[st];
         }
       });
       updateStatusPdfButton();
@@ -499,8 +482,7 @@ set(newReservationRef, newRes);
     }
     window.downloadSelectedStatusPdf = function() {
       // Exporta toda a categoria selecionada, sem limitar pelo texto pesquisado
-      // ou pela turma selecionada. Para exportar a tela exatamente como está,
-      // use o botão "Lista atual".
+      // ou pela turma selecionada.
       downloadLoansPdf(currentStatusFilter);
     };
     // Filtros e Ordenação
